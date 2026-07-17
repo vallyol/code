@@ -31,9 +31,9 @@ else
     RESET=""
 fi
 
-status_ok()   { printf "%sOK%s" "$GREEN" "$RESET"; }
-status_warn() { printf "%sWARN%s" "$YELLOW" "$RESET"; }
-status_fail() { printf "%sFAIL%s" "$RED" "$RESET"; }
+status_ok()   { printf "OK"; }
+status_warn() { printf "WARN"; }
+status_fail() { printf "FAIL"; }
 
 truncate() {
     local s="$1"
@@ -46,8 +46,8 @@ truncate() {
 }
 
 print_header() {
-    printf "%-16s %-10s %-6s %-8s %-24s %-70s\n" "Provider" "Status" "HTTP" "Time" "Tags" "Result"
-    printf "%-16s %-10s %-6s %-8s %-24s %-70s\n" "--------" "------" "----" "----" "----" "------"
+    printf "%-16s %-8s %-8s %-10s %-24s %-70s \n" "Provider" "Status" "HTTP" "Time" "Tags" "Result"
+    printf "%-16s %-8s %-8s %-10s %-24s %-70s \n" "--------" "------" "----" "----" "----" "------"
 }
 
 print_row() {
@@ -60,7 +60,9 @@ print_row() {
 
     tags="$(truncate "$tags" 24)"
     result="$(truncate "$result" 70)"
-    printf "%-16s %-10s %-6s %-8s %-24s %-70s\n" "$provider" "$status" "$http" "$time" "$tags" "$result"
+
+    printf "%-16s %-8s %-8s %-10s %-24s %-70s \n" \
+        "$provider" "$status" "$http" "$time" "$tags" "$result"
 }
 
 DOMAIN=""

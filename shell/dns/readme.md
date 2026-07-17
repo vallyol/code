@@ -340,3 +340,27 @@ adguard_family   FAIL 000    0ms      family,filtering         curl error
 ```
 
 Adguard и Mullvad уже недоступны...
+
+#### Правка
+
+Я убрал вывод статуса в цвете, который "ломал" вывод результатов тестирования в табличном виде (сдвиг влево, начиная со столбца http). Теперь результат выглядит так:
+
+```
+$ ./doh-test2.sh -d ya.ru
+Provider         Status   HTTP     Time       Tags                     Result                                                                 
+--------         ------   ----     ----       ----                     ------                                                                 
+cloudflare       OK       200      445ms      privacy,security,stan... ya.ru 457 1 5.255.255.242;ya.ru 457 1 77.88.44.242 ya.ru 457 1 77.8... 
+google           WARN     400      1267ms     standard,security        HTTP error                                                             
+quad9            WARN     400      279ms      privacy,security         HTTP error                                                             
+nextdns          OK       200      323ms      privacy,filtering,family ya.ru. 113 1 77.88.44.242;ya.ru. 113 1 77.88.55.242 ya.ru. 113 1 5.... 
+opendns          WARN     400      255ms      security,family          HTTP error                                                             
+cleanbrowsing    WARN     400      409ms      family,filtering         HTTP error                                                             
+curl: (28) Connection timed out after 5002 milliseconds
+mullvad          FAIL     000      0ms        privacy,standard         curl error                                                             
+curl: (28) Connection timed out after 5001 milliseconds
+adguard          FAIL     000      0ms        privacy,filtering        curl error                                                             
+curl: (28) Connection timed out after 5002 milliseconds
+adguard_family   FAIL     000      0ms        family,filtering         curl error
+```
+
+Расшифровка `curl error`, если присутствует, выводится под строкой тестируемого провайдера
