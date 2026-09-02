@@ -363,7 +363,35 @@ curl: (28) Connection timed out after 5002 milliseconds
 adguard_family   FAIL     000      0ms        family,filtering         curl error
 ```
 
-Расшифровка `curl error`, если присутствует, выводится под строкой тестируемого провайдера
+Расшифровка `curl error`, если присутствует, выводится над строкой тестируемого провайдера
+
+#### А что при белых списках...
+
+```
+$ ./doh-test2.sh -d ya.ru
+Provider         Status   HTTP     Time       Tags                     Result                                                                 
+--------         ------   ----     ----       ----                     ------                                                                 
+curl: (28) Resolving timed out after 5001 milliseconds
+cloudflare       FAIL     000      0ms        privacy,security,stan... curl error                                                             
+curl: (28) Connection timed out after 5000 milliseconds
+google           FAIL     000      0ms        standard,security        curl error                                                             
+curl: (28) Connection timed out after 5002 milliseconds
+quad9            FAIL     000      0ms        privacy,security         curl error                                                             
+curl: (28) Resolving timed out after 5001 milliseconds
+nextdns          FAIL     000      0ms        privacy,filtering,family curl error                                                             
+curl: (28) Resolving timed out after 5002 milliseconds
+opendns          FAIL     000      0ms        security,family          curl error                                                             
+curl: (28) Resolving timed out after 5001 milliseconds
+cleanbrowsing    FAIL     000      0ms        family,filtering         curl error                                                             
+curl: (28) Resolving timed out after 5002 milliseconds
+mullvad          FAIL     000      0ms        privacy,standard         curl error                                                             
+curl: (28) Resolving timed out after 5001 milliseconds
+adguard          FAIL     000      0ms        privacy,filtering        curl error                                                             
+curl: (28) Connection timed out after 5002 milliseconds
+adguard_family   FAIL     000      0ms        family,filtering         curl error 
+```
+
+Яндекс doh в списке ретрансляторов отсутствует. Потому, что указываемый везде адрес скорее dot, а не doh.
 
 ## dns-spoofing.sh - тест подмены
 
@@ -421,3 +449,32 @@ Cloudflare DNS     1.1.1.1         OK       76 msec    NOERROR    SERVFAIL   Н�
 - `REFUSED` и `SERVFAIL` — отдельными статусами, которые не надо автоматически записывать в "подмена" или "нет" (поэтому, выводим `неопределено`).
 
 Применительно к Яндекс ДНС данный результат стоит рассматривать так: статус `refused` для youtube.com - это отказ обрабатывать запрос к домену по причине требований удалить имя из НСДИ. 
+
+### Что при белых списках...
+
+```
+$ ./dns-spoofing.sh ya.ru
+
+=== ЗАПУСК ТЕСТА DNS ===
+Целевой домен: ya.ru
+Тестовый домен: check-hijack-1784642179003972496.test
+
+Сервис             IP Сервера      Статус   RealTime   RCODE      FakeRCODE  Проверка
+---------------------------------------------------------------------------------------
+Current DNS        100.100.100.100 OK       23 msec    NOERROR    NOERROR    Нет    
+---------------------------------------------------------------------------------------
+AdGuard DNS        94.140.14.14    OK       N/A        N/A        N/A        Неопределено
+Comodo Secure      8.26.56.26      OK       N/A        N/A        N/A        Неопределено
+Yandex DNS         77.88.8.8       OK       23 msec    REFUSED    NXDOMAIN   Нет    
+Control D          76.76.2.4       OK       N/A        N/A        N/A        Неопределено
+Alibaba            223.5.5.5       OK       N/A        N/A        N/A        Неопределено
+Neustar Ultra      156.154.70.5    OK       N/A        N/A        N/A        Неопределено
+CleanBrowsing      185.228.168.9   OK       N/A        N/A        N/A        Неопределено
+OpenDNS            208.67.222.222  OK       N/A        N/A        N/A        Неопределено
+Google DNS         8.8.8.8         OK       71 msec    NOERROR    NXDOMAIN   Нет    
+Quad9              9.9.9.9         OK       N/A        N/A        N/A        Неопределено
+Mullvad            194.242.2.2     OK       N/A        N/A        N/A        Неопределено
+Cloudflare DNS     1.1.1.1         OK       N/A        N/A        N/A        Неопределено
+```
+
+В условиях ограничений интернета вполне ожидаемый результат...
