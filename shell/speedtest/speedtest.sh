@@ -1,9 +1,13 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
+IP_CHECKER="ifconfig.me"
 HOST="speed.cloudflare.com"
 URL_DOWNLOAD="https://speed.cloudflare.com/__down?bytes=10485760"
 URL_UPLOAD="https://speed.cloudflare.com/__up"
 #URL_DOWNLOAD="http://speedtest.tele2.net/10MB.zip"
+
+# display current IP
+ip=$(curl -s "$IP_CHECKER")
 
 # download
 d=$(curl -o /dev/null -s -w '%{speed_download}' "$URL_DOWNLOAD")
@@ -35,9 +39,46 @@ else
 fi
 
 # onscreen
-echo "Скорость загрузки: $(echo "scale=2; $d*8/1048576" | bc) Мбит/с"
-echo "Скорость выгрузки:   $(echo "scale=2; $u*8/1048576" | bc) Мбит/с"
-echo "Средний пинг: ${avg_rtt} ms"
-echo "Хопов (оценка из ping, TTL $seen_ttl): ~$hops_ping"
-echo "Хопов (traceroute): ${hops_tr}"
-echo "Разница хопов (traceroute − ping): $diff → $route_status"
+# echo "Мой IP: "$ip""
+# echo "Скорость загрузки: $(awk -v bytes="$d" 'BEGIN { printf "%.2f", (bytes * 8) / 1048576 }') Мбит/с"
+# echo "Скорость выгрузки: $(awk -v bytes="$u" 'BEGIN { printf "%.2f", (bytes * 8) / 1048576 }') Мбит/с"
+# echo "Средний пинг: ${avg_rtt} ms"
+# echo "Хопов (оценка из ping, TTL $seen_ttl): ~$hops_ping"
+# echo "Хопов (traceroute): ${hops_tr}"
+# echo "Разница хопов (traceroute − ping): $diff → $route_status"
+
+#echo "Скорость загрузки: $(echo "scale=2; $d*8/1048576" | bc) Мбит/с"
+#echo "Скорость выгрузки:   $(echo "scale=2; $u*8/1048576" | bc) Мбит/с"
+
+print_row() {
+  local key="$1"
+  local value="$2"
+  local max_len=40  # Граница выравнивания двоеточия
+
+  # Точный подсчет кириллических символов и знаков ( )
+  local char_count=${#key}
+
+  # Выводим сам ключ
+  printf "%s" "$key"
+
+  # Защищенный расчет отступа
+  if [ "$char_count" -lt "$max_len" ]; then
+    # Если ключ короче 30 символов, вычисляем остаток пробелов
+    local padding=$(( max_len - char_count ))
+    printf "%${padding}s" ""
+  else
+    # Если ключ равен 30 символам или длиннее, пробелы не нужны
+    :
+  fi
+
+  # Выводим двоеточие и значение
+  printf " : %s\n" "$value"
+}
+
+print_row "Мой IP" "$ip"
+print_row "Скорость загрузки" "$(awk -v bytes="$d" 'BEGIN { printf "%.2f", (bytes * 8) / 1048576 }') Мбит/с"
+print_row "Скорость выгрузки" "$(awk -v bytes="$u" 'BEGIN { printf "%.2f", (bytes * 8) / 1048576 }') Мбит/с"
+print_row "Средний пинг" "${avg_rtt} ms"
+print_row "Хопов (оценка из ping, TTL $seen_ttl)" "~$hops_ping"
+print_row "Хопов (traceroute)" "${hops_tr}"
+print_row "Разница хопов (traceroute − ping)" "$diff → $route_status"

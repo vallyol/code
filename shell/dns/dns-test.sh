@@ -28,6 +28,8 @@ declare -A servers=(
   ["Yandex DNS"]="77.88.8.8"
   ["Alibaba"]="223.5.5.5"
   ["Mullvad"]="194.242.2.2"
+  ["NSDI"]="195.208.4.1"
+  ["NSDI2"]="195.208.5.1"
 )
 
 domain="$1"
