@@ -6,8 +6,12 @@ URL_DOWNLOAD="https://speed.cloudflare.com/__down?bytes=10485760"
 URL_UPLOAD="https://speed.cloudflare.com/__up"
 #URL_DOWNLOAD="http://speedtest.tele2.net/10MB.zip"
 
-# display current IP
+IP_INFO_ADDR="http://ip-api.com/json/"
+IP_INFO_DATA='{query, country, regionName, city, lat, lon, timezone, isp, org}'
+
+# current IP
 ip=$(curl -s "$IP_CHECKER")
+IP_DATA=$(curl -s "${IP_INFO_ADDR}${ip}" | jq "$IP_INFO_DATA")
 
 # download
 d=$(curl -o /dev/null -s -w '%{speed_download}' "$URL_DOWNLOAD")
@@ -82,3 +86,15 @@ print_row "Средний пинг" "${avg_rtt} ms"
 print_row "Хопов (оценка из ping, TTL $seen_ttl)" "~$hops_ping"
 print_row "Хопов (traceroute)" "${hops_tr}"
 print_row "Разница хопов (traceroute − ping)" "$diff → $route_status"
+echo ""
+#printf '%s\n' "$IP_DATA"
+echo "Гео данные об адресе:"
+print_row "IP address" "$(jq -r '.query // "-"' <<< "$IP_DATA")"
+print_row "Country"    "$(jq -r '.country // "-"' <<< "$IP_DATA")"
+print_row "Region"     "$(jq -r '.regionName // "-"' <<< "$IP_DATA")"
+print_row "City"       "$(jq -r '.city // "-"' <<< "$IP_DATA")"
+print_row "Latitude"   "$(jq -r '.lat // "-"' <<< "$IP_DATA")"
+print_row "Longitude"  "$(jq -r '.lon // "-"' <<< "$IP_DATA")"
+print_row "Timezone"   "$(jq -r '.timezone // "-"' <<< "$IP_DATA")"
+print_row "ISP"        "$(jq -r '.isp // "-"' <<< "$IP_DATA")"
+print_row "Organization" "$(jq -r '.org // "-"' <<< "$IP_DATA")"
