@@ -13,6 +13,11 @@ IP_INFO_DATA='{query, country, regionName, city, lat, lon, timezone, isp, org}'
 ip=$(curl -s "$IP_CHECKER")
 IP_DATA=$(curl -s "${IP_INFO_ADDR}${ip}" | jq "$IP_INFO_DATA")
 
+# OSM
+OSM_LAT=$(jq -r '.lat // "-"' <<< "$IP_DATA")
+OSM_LONG=$(jq -r '.lon // "-"' <<< "$IP_DATA")
+OSM_ZOOM="13"
+
 # download
 d=$(curl -o /dev/null -s -w '%{speed_download}' "$URL_DOWNLOAD")
 
@@ -98,3 +103,5 @@ print_row "Longitude"  "$(jq -r '.lon // "-"' <<< "$IP_DATA")"
 print_row "Timezone"   "$(jq -r '.timezone // "-"' <<< "$IP_DATA")"
 print_row "ISP"        "$(jq -r '.isp // "-"' <<< "$IP_DATA")"
 print_row "Organization" "$(jq -r '.org // "-"' <<< "$IP_DATA")"
+echo ""
+echo "https://openstreetmap.org/#map=${OSM_ZOOM}/${OSM_LAT}/${OSM_LONG}"
